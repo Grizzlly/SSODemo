@@ -1,0 +1,22 @@
+﻿@using Company.Services.Identity.Shared.ViewModels;
+<MudDialog>
+    <DialogContent>
+       <MudGrid Spacing="3" Justify="Justify.FlexStart">
+            <MudItem xs="10" Style="width:360px">
+                 <MudAutocomplete T="UserRoleViewModel" Label="Roles" @bind-Value="selectedOption" 
+                         SearchFunc="@SearchRoles" ToStringFunc="@(e=> e == null ? null : e.RoleName)"
+                         ResetValueOnEmptyText="true" CoerceText="false" CoerceValue="false"
+                         Class="mt-n3" Variant="Variant.Text" Margin="Margin.None" Immediate="true"
+                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+            </MudItem>
+            <MudItem xs="2">
+                <MudIconButton UserAttributes="@(new (){{"id","btnAddRole"}})" OnClick="AddRoleAsync" Disabled="@(null == selectedOption)"
+                               Icon="@Icons.Material.Filled.Add" Color="Color.Primary" />
+            </MudItem>
+        </MudGrid>     
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <MudAlert id="errorMessage" Severity="Severity.Error">@error</MudAlert>
+        }
+    </DialogContent>
+</MudDialog>

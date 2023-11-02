@@ -1,0 +1,8 @@
+# Running
+
+`docker-compose -f "docker-compose.yml" -f "docker-compose.override.yml" up`
+
+# Creds
+
+`username@email.com`
+`password`

@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+
+  # sqldata:
+  #   image: yugabytedb/yugabyte:latest
+
+  # identity-api:
+  #   image: ${REGISTRY:-company}/identityapi:${PLATFORM:-linux}-${TAG:-latest}
+  #   build:
+  #     context: .
+  #     dockerfile: src/Identity.API/Dockerfile
+  #   depends_on:
+  #     - sqldata
+
+  identity.blazorclient:
+    image: ${REGISTRY:-lsac}/ssodemo:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/Identity.BlazorClient/Dockerfile
+    # depends_on:
+    #   - identity-api

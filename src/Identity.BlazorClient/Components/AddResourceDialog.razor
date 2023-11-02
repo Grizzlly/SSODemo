@@ -1,0 +1,18 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudGrid Spacing="3" Justify="Justify.FlexStart">
+            <MudItem xs="10" Style="width:360px">
+                <MudTextField id="inputResourceName" @bind-Value="@resource" Label="Resource" Class="mt-n3" @onfocus="(() => error = string.Empty)"
+                              Variant="Variant.Text" Margin="Margin.None" Immediate="true" ></MudTextField>
+            </MudItem>
+            <MudItem xs="2">
+                <MudIconButton UserAttributes="@(new (){{"id","btnAddResource"}})" OnClick="AddNewResource"  Disabled="string.IsNullOrEmpty(resource)"
+                               Icon="@Icons.Material.Filled.Add" Color="Color.Primary" />
+            </MudItem>
+        </MudGrid>
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <MudAlert UserAttributes="@(new (){{"id","errorAlert"}})" Severity="Severity.Error">@error</MudAlert>
+        }
+    </DialogContent>
+</MudDialog>
