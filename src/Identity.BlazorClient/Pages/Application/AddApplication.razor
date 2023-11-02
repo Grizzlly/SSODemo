@@ -1,0 +1,41 @@
+﻿@page "/applications/new"
+@using Company.Services.Identity.Shared.ViewModels;
+@attribute [Authorize(Policy = Policies.CanManageApplications)]
+
+@if (application != null)
+{
+    <MudGrid Spacing="2" Justify="Justify.FlexStart" Class="p-2">
+         <MudItem xs="8">
+               <MudText Typo="Typo.h4">Create New</MudText>
+         </MudItem/>
+         <MudItem xs="4">
+              <MudSelect UserAttributes="@(new (){{"id","cbPresets"}})" T="ApplicationPreset" ValueChanged="(v) => ApplyPreset(v)" Label="Apply Preset" 
+                AdornmentColor="Color.Secondary" FullWidth="false">
+                @foreach (ApplicationPreset item in Enum.GetValues(typeof(ApplicationPreset)))
+                {
+                    <MudSelectItem Value="@item">@displayStringConverter(item)</MudSelectItem>
+                }
+                </MudSelect>
+         </MudItem/>
+    </MudGrid>  
+
+    <br />
+    <MudPaper Elevation="4">
+        <EditForm Model="@application" OnValidSubmit="AddApplicationDetailsAsync">
+            <FluentValidationValidator />           
+            <MudCard>
+                <MudCardContent>
+                    <CascadingValue Value="application">
+                        <ApplicationForm Dialog="Dialog" />
+                    </CascadingValue>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                           Color="Color.Primary" Class="ml-auto">Create</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </MudPaper>
+    <br/>
+    <br/>
+}
