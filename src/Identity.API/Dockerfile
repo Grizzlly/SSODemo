@@ -1,6 +1,7 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS base
+COPY . .
 WORKDIR /src/Identity.API
 RUN dotnet restore
 RUN dotnet build -c Release -o /app/build
@@ -12,7 +13,7 @@ RUN dotnet build -c Release -o /app/build
 ##COPY . .
 #RUN dotnet build "Identity.API.csproj" -c Release -o /app/build
 #
-FROM build AS publish
+FROM base AS publish
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
