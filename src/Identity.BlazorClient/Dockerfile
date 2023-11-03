@@ -1,10 +1,12 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 COPY . .
 WORKDIR /src/Identity.BlazorClient
 RUN dotnet restore
 RUN dotnet build -c Release -o /app/build
 
 FROM build AS publish
+RUN apt-get update
+RUN apt-get install -y python3
 RUN dotnet workload install wasm-tools
 RUN dotnet publish -c Release -o /app/output --self-contained --runtime browser-wasm
 
