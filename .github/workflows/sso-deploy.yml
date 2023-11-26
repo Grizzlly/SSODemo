@@ -1,0 +1,85 @@
+name: CI/CD
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push request event for the master branch
+  push:    
+    branches: [main]
+
+jobs:
+  deploy:
+    # Our previously created self-hosted runner
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        dotnet: ["7.0.x"]
+
+    # A sequence of tasks that will execute as part of the job
+    steps:
+      # Checks out repository so our job can access it
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Install dependencies
+        run: dotnet restore SSODemo.sln
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore SSODemo.sln
+
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          script_stop: true
+          host: 138.197.185.38
+          username: root
+          key: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            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
+            -----END OPENSSH PRIVATE KEY-----
+          script: |
+            rm -rf ./SSODemo
+            git clone git@github.com:Grizzlly/SSODemo.git || true
+            cd SSODemo/src/Identity.API
+            /root/.dotnet/dotnet publish -c Release -r linux-x64 --self-contained
+            rm -rf /var/www/ssodemoapi/*
+            cd bin/Release/net7.0/linux-x64/publish
+            mv * /var/www/ssodemoapi
