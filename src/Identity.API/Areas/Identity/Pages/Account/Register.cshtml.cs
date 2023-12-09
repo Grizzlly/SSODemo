@@ -57,20 +57,18 @@ public class RegisterModel<TUser, TKey> : RegisterModel
     private readonly IUserStore<TUser> userStore;
     private readonly IUserEmailStore<TUser> emailStore;
     private readonly ILogger<RegisterModel> logger;
-    private readonly IEmailSender emailSender;
+    //private readonly IEmailSender emailSender;
 
     public RegisterModel(UserManager<TUser> userManager,
         IUserStore<TUser> userStore,
         SignInManager<TUser> signInManager,
-        ILogger<RegisterModel> logger,
-        IEmailSender emailSender)
+        ILogger<RegisterModel> logger)
     {
         this.userManager = userManager;
         this.userStore = userStore;
         emailStore = GetEmailStore();
         this.signInManager = signInManager;
         this.logger = logger;
-        this.emailSender = emailSender;
     }
 
     public override async Task OnGetAsync(string returnUrl = null)
@@ -104,8 +102,8 @@ public class RegisterModel<TUser, TKey> : RegisterModel
                     values: new { area = "Identity", userId, code, returnUrl },
                     protocol: Request.Scheme);
 
-                await emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                //await emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                 if (userManager.Options.SignIn.RequireConfirmedAccount)
                 {
