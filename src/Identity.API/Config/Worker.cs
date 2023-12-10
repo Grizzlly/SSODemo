@@ -50,11 +50,13 @@ public class Worker : IHostedService
                     Type = ClientTypes.Public,
                     PostLogoutRedirectUris =
                 {
-                    new Uri($"{configuration["IdentityHost"]}/authentication/logout-callback")
+                    new Uri($"{configuration["IdentityHost"]}/authentication/logout-callback"),
+                    new Uri($"https://oidcdebugger.com/debug")
                 },
                     RedirectUris =
                 {
-                    new Uri($"{configuration["IdentityHost"]}/authentication/login-callback")
+                    new Uri($"{configuration["IdentityHost"]}/authentication/login-callback"),
+                    new Uri($"https://oidcdebugger.com/debug")
                 },
                     Permissions =
                 {

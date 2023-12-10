@@ -75,8 +75,8 @@ builder.Services.AddOidcAuthentication(options =>
     // For more information about this bug, visit https://github.com/dotnet/aspnetcore/issues/28344.
     //
     options.ProviderOptions.ResponseMode = "query";
-    options.AuthenticationPaths.RemoteRegisterPath = "./Identity/Account/Register";
     options.AuthenticationPaths.LogInPath = "./Identity/Account/Login";
+    options.AuthenticationPaths.RegisterPath = "./Identity/Account/Register";
 
     options.UserOptions.RoleClaim = "role";
 

@@ -99,7 +99,6 @@ public class AuthorizationController : Controller
             parameters.Add(KeyValuePair.Create(Parameters.Prompt, new StringValues(prompt)));
 
             return Challenge(
-                authenticationSchemes: IdentityConstants.ApplicationScheme,
                 properties: new AuthenticationProperties
                 {
                     RedirectUri = Request.PathBase + Request.Path + QueryString.Create(parameters),

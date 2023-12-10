@@ -12,19 +12,5 @@ namespace Company.Services.Identity.API.Config
             yield return "api";
             yield return "scopes";
         }
-
-        public static IEnumerable<OpenIddictApplicationDescriptor> GetApplications()
-        {
-            yield return new OpenIddictApplicationDescriptor()
-            {
-                ClientId = "golinks",
-                DisplayName = "GoLinks",
-                Permissions =
-                {
-                    OpenIddictConstants.Permissions.Endpoints.Token,
-                    OpenIddictConstants.Permissions.GrantTypes.ClientCredentials
-                },
-            };
-        }
     }
 }

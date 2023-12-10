@@ -14,6 +14,7 @@ using Company.Services.Identity.API;
 using OpenIddict.Validation.AspNetCore;
 using System.Reflection;
 using AutoMapper;
+using OpenIddict.Server.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -204,7 +205,8 @@ builder.Services.AddOpenIddict()
 var authenticationBuilder = builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+    //options.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+    //options.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
 });
 
 foreach (var externalProvider in pluginsOptions["OAuthProvider"])
