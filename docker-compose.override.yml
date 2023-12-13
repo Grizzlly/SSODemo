@@ -7,47 +7,47 @@ version: '3.4'
 # An external IP or DNS name has to be used (instead localhost and the 10.0.75.1 IP) when testing the Web apps and the Xamarin apps from remote machines/devices using the same WiFi, for instance.
 
 services:
-  # sqldata:
-  #   command: bin/yugabyted start --base_dir=/home/yugabyte/yb_data --daemon=false
-  #   ports:
-  #     - 7000:7000
-  #     - 9000:9000
-  #     - 5433:5433
-  #     - 9042:9042
-  #   networks:
-  #     - devnet
-  #   volumes:
-  #    - yb-data:/home/yugabyte/yb_data
+  sqldata:
+    command: bin/yugabyted start --base_dir=/home/yugabyte/yb_data --daemon=false
+    ports:
+      - 7000:7000
+      - 9000:9000
+      - 5433:5433
+      - 9042:9042
+    networks:
+      - devnet
+    volumes:
+     - yb-data:/home/yugabyte/yb_data
 
-  # identity-api:
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - Development=true 
-  #     - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
-  #     - ConnectionStrings__IdentityDb=Host=${EXTERNAL_DNS_NAME_OR_IP};Database=identity;Username=yugabyte;Password=yugabyte;Port=5433
-  #     - UseCustomizationData=True
-  #     - OrchestratorType=${ORCHESTRATOR_TYPE}
-  #     - Identity__Host=http://127.0.0.1:5105
-  #     - ASPNETCORE_Kestrel__Certificates__Default__Password=qazwsx123
-  #     - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-  #   volumes:
-  #     - ~/.aspnet/https:/https:ro
-  #   ports:
-  #     - "5105:80"
-  #   networks:
-  #     - devnet
+  identity-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Development=true 
+      - ASPNETCORE_URLS=http://+;https://+
+      - ConnectionStrings__IdentityDb=Host=sqldata;Database=identity;Username=yugabyte;Password=yugabyte;Port=5433
+      - UseCustomizationData=True
+      - OrchestratorType=${ORCHESTRATOR_TYPE}
+      - Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - Kestrel__Certificates__Default__Password=password
+    ports:
+      - "6051:443"
+      - "6050:80"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    networks:
+      - devnet
 
   identity.blazorclient:
     ports:
       - 5000:80
-    # networks:
-    #   - devnet
+    networks:
+      - devnet
 
-    # volumes:
-    #   yb-data:
+volumes:
+    yb-data:
 
-    # networks:
-    #   devnet:
-    #     external: true      
+networks:
+    devnet:
+        external: true
 
 

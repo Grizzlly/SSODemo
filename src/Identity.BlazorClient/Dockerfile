@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 COPY . .
 WORKDIR /src/Identity.BlazorClient
 RUN dotnet restore

@@ -55,11 +55,11 @@ builder.Services.AddMudServices(config =>
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
-//});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+});
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -248,12 +248,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/error-local-development");
     //app.UseWebAssemblyDebugging();
-    //app.UseSwagger();
-    //app.UseSwaggerUI(options =>
-    //{
-    //    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Grizzlly Identity");
-    //    options.RoutePrefix = string.Empty;
-    //});
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Grizzlly Identity");
+        options.RoutePrefix = string.Empty;
+    });
 }
 else
 {
