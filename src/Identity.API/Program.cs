@@ -15,6 +15,8 @@ using OpenIddict.Validation.AspNetCore;
 using System.Reflection;
 using AutoMapper;
 using OpenIddict.Server.AspNetCore;
+using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,7 +81,6 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
     options.ClaimsIdentity.UserIdClaimType = OpenIddictConstants.Claims.Subject;
     options.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
-    //options.ClaimsIdentity.EmailClaimType = OpenIddictConstants.Claims.Email;
 
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
@@ -87,17 +88,20 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Password.RequiredLength = 8;
     options.Password.RequireUppercase = false;
 })
-.AddSignInManager()
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddUserStore<ApplicationUserStore>()
 .AddRoleStore<ApplicationRoleStore>()
-.AddUserManager<UserManager<ApplicationUser>>()
 //.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
 .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(opts =>
 {
     opts.LoginPath = "/Identity/Account/Login";
+    opts.Events.OnRedirectToAccessDenied = c =>
+    {
+        c.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.FromResult<object?>(null);
+    };
 });
 
 builder.Services.AddOpenIddict()
@@ -137,13 +141,6 @@ builder.Services.AddOpenIddict()
 
         // Custom auth flows are also supported
         options.AllowCustomFlow("custom_flow_name");
-
-        // Using reference tokens means the actual access and refresh tokens
-        // are stored in the database and different tokens, referencing the actual
-        // tokens (in the db), are used in request headers. The actual tokens are not
-        // made public.
-        //options.UseReferenceAccessTokens();
-        //options.UseReferenceRefreshTokens();
 
         // Register your scopes - Scopes are a list of identifiers used to specify
         // what access privileges are requested.
@@ -191,7 +188,7 @@ builder.Services.AddOpenIddict()
         .EnableUserinfoEndpointPassthrough()
         .EnableStatusCodePagesIntegration();
 
-        if (builder.Configuration["Development"] == "true")
+        if (builder.Environment.IsDevelopment())
         {
             optBuilder.DisableTransportSecurityRequirement();
         }
@@ -202,13 +199,17 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore();
     });
 
-var authenticationBuilder = builder.Services.AddAuthentication(options =>
+var authenticationBuilder = builder.Services.AddAuthentication(o =>
 {
-    options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-    //options.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    o.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+    o.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+}).AddCookie(o =>
+{
+    o.ForwardDefault = IdentityConstants.ApplicationScheme;
+    o.ForwardAuthenticate = IdentityConstants.ApplicationScheme;
+    o.ForwardChallenge = IdentityConstants.ApplicationScheme;
 });
-
 foreach (var externalProvider in pluginsOptions["OAuthProvider"])
 {
     builder.Services.AddPlugin<IExternalAuthProvider>(externalProvider, (provider, serviceCollection) =>
@@ -219,24 +220,22 @@ foreach (var externalProvider in pluginsOptions["OAuthProvider"])
 
 builder.Services.ConfigureAuthorizationPolicy();
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        optionsBuilder =>
-        {
-            optionsBuilder.WithOrigins("http://127.0.0.1", "http://localhost", "http://host.docker.internal");
+//builder.Services.AddCors(options =>
+//{
+//    options.AddDefaultPolicy(
+//        optionsBuilder =>
+//        {
+//            var allowedOrigins = builder.Configuration["AllowedOrigins"];
+//            foreach (var item in allowedOrigins?.Split(';') ?? Enumerable.Empty<string>())
+//            {
+//                optionsBuilder.WithOrigins(item);
+//            }
 
-            var allowedOrigins = builder.Configuration["AllowedOrigins"];
-            foreach (var item in allowedOrigins?.Split(';') ?? Enumerable.Empty<string>())
-            {
-                optionsBuilder.WithOrigins(item);
-            }
-
-            optionsBuilder.AllowAnyHeader();
-            optionsBuilder.AllowAnyMethod();
-            optionsBuilder.AllowCredentials();
-        });
-});
+//            optionsBuilder.AllowAnyHeader();
+//            optionsBuilder.AllowAnyMethod();
+//            optionsBuilder.AllowCredentials();
+//        });
+//});
 
 builder.Services.AddHostedService<Worker>();
 
@@ -260,8 +259,6 @@ else
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
-
-//app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();

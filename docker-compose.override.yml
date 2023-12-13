@@ -7,24 +7,13 @@ version: '3.4'
 # An external IP or DNS name has to be used (instead localhost and the 10.0.75.1 IP) when testing the Web apps and the Xamarin apps from remote machines/devices using the same WiFi, for instance.
 
 services:
-  sqldata:
-    command: bin/yugabyted start --base_dir=/home/yugabyte/yb_data --daemon=false
-    ports:
-      - 7000:7000
-      - 9000:9000
-      - 5433:5433
-      - 9042:9042
-    networks:
-      - devnet
-    volumes:
-     - yb-data:/home/yugabyte/yb_data
 
   identity-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Development=true 
       - ASPNETCORE_URLS=http://+;https://+
-      - ConnectionStrings__IdentityDb=Host=sqldata;Database=identity;Username=yugabyte;Password=yugabyte;Port=5433
+      - ConnectionStrings__IdentityDb=Host=localhost;Database=ssodemo;Username=postgres;Password=yugabyte;Port=5432
       - UseCustomizationData=True
       - OrchestratorType=${ORCHESTRATOR_TYPE}
       - Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
@@ -42,9 +31,6 @@ services:
       - 5000:80
     networks:
       - devnet
-
-volumes:
-    yb-data:
 
 networks:
     devnet:

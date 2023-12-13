@@ -9,6 +9,7 @@ using Company.Services.Identity.Core.ViewModels;
 using Company.Services.Identity.Shared.Attributes;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -99,6 +100,7 @@ public class AuthorizationController : Controller
             parameters.Add(KeyValuePair.Create(Parameters.Prompt, new StringValues(prompt)));
 
             return Challenge(
+                authenticationSchemes: IdentityConstants.ApplicationScheme,
                 properties: new AuthenticationProperties
                 {
                     RedirectUri = Request.PathBase + Request.Path + QueryString.Create(parameters),
@@ -198,8 +200,8 @@ public class AuthorizationController : Controller
         }
     }
 
-    [Authorize, FormValueRequired("submit.Accept")]
-    [HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme), FormValueRequired("submit.Accept")]
+    [HttpPost("~/connect/authorize")]
     public async Task<IActionResult> Accept()
     {
         var request = HttpContext.GetOpenIddictServerRequest() ??
@@ -273,8 +275,8 @@ public class AuthorizationController : Controller
         return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
-    [Authorize, FormValueRequired("submit.Deny")]
-    [HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme), FormValueRequired("submit.Deny")]
+    [HttpPost("~/connect/authorize")]
     // Notify OpenIddict that the authorization grant has been denied by the resource owner
     // to redirect the user agent to the client application using the appropriate response_mode.
     public IActionResult Deny() => Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
